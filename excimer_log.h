@@ -199,6 +199,36 @@ zend_string *excimer_log_format_collapsed(excimer_log *log);
 void excimer_log_get_speedscope_data(excimer_log *log, zval *zp_data);
 
 /**
+ * Get an array in shortcut format
+ *
+ * @param log The log object
+ * @param zp_data The destination
+ */
+void excimer_log_get_shortcut_data(excimer_log *log, zval *zp_data);
+
+/**
+ * Format the log in shortcut format
+ *
+ * @param log The log object
+ */
+zend_string *excimer_log_format_shortcut(excimer_log *log);
+
+/**
+ * Initialize and fill destinations with shortcut data
+ *
+ * @param log The log object
+ * @param ht_pp_frames The frames HashTable destination
+ * @param ht_pp_weights The weights HashTable destination
+ * @param ht_pp_samples The samples HashTable destination
+ */
+void excimer_log_combine_shortcut_data(
+	excimer_log *log,
+	HashTable **ht_pp_frames,
+	HashTable **ht_pp_weights,
+	HashTable **ht_pp_samples
+);
+
+/**
  * Aggregate the log producing self/inclusive statistics as an array
  */
 HashTable *excimer_log_aggr_by_func(excimer_log *log);

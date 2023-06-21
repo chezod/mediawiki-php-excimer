@@ -73,6 +73,22 @@ class ExcimerLog implements ArrayAccess, Iterator {
 	}
 
 	/**
+	 * Get an array which can be imported as shortcut
+	 *
+	 * @return array
+	 */
+	function getShortcutData() {
+	}
+
+	/**
+	 * Aggregate the stack traces and convert them to a line-based shortcut format
+	 *
+	 * @return string
+	 */
+	function formatShortcut() {
+	}
+
+	/**
 	 * Get the total number of profiling periods represented by this log.
 	 *
 	 * @return int

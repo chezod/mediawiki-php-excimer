@@ -189,6 +189,8 @@ static void ExcimerLog_iterator_invalidate_current(zend_object_iterator *iter);
 static PHP_METHOD(ExcimerLog, __construct);
 static PHP_METHOD(ExcimerLog, formatCollapsed);
 static PHP_METHOD(ExcimerLog, getSpeedscopeData);
+static PHP_METHOD(ExcimerLog, getShortcutData);
+static PHP_METHOD(ExcimerLog, formatShortcut);
 static PHP_METHOD(ExcimerLog, aggregateByFunction);
 static PHP_METHOD(ExcimerLog, getEventCount);
 static PHP_METHOD(ExcimerLog, current);
@@ -287,6 +289,12 @@ ZEND_BEGIN_ARG_INFO(arginfo_ExcimerLog_formatCollapsed, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO(arginfo_ExcimerLog_getSpeedscopeData, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_ExcimerLog_getShortcutData, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_ExcimerLog_formatShortcut, 0)
 ZEND_END_ARG_INFO()
 
 #if PHP_VERSION_ID < 70200
@@ -397,6 +405,8 @@ static const zend_function_entry ExcimerLog_methods[] = {
 		ZEND_ACC_PRIVATE | ZEND_ACC_FINAL)
 	PHP_ME(ExcimerLog, formatCollapsed, arginfo_ExcimerLog_formatCollapsed, 0)
 	PHP_ME(ExcimerLog, getSpeedscopeData, arginfo_ExcimerLog_getSpeedscopeData, 0)
+	PHP_ME(ExcimerLog, getShortcutData, arginfo_ExcimerLog_getShortcutData, 0)
+	PHP_ME(ExcimerLog, formatShortcut, arginfo_ExcimerLog_formatShortcut, 0)
 	PHP_ME(ExcimerLog, aggregateByFunction, arginfo_ExcimerLog_aggregateByFunction, 0)
 	PHP_ME(ExcimerLog, getEventCount, arginfo_ExcimerLog_getEventCount, 0)
 	PHP_ME(ExcimerLog, current, arginfo_ExcimerLog_current, 0)
@@ -1068,6 +1078,24 @@ static PHP_METHOD(ExcimerLog, getSpeedscopeData)
 {
 	ExcimerLog_obj *log_obj = EXCIMER_OBJ_ZP(ExcimerLog, getThis());
 	excimer_log_get_speedscope_data(&log_obj->log, return_value);
+}
+/* }}} */
+
+/* {{{ proto string ExcimerLog::getShortcutData()
+ */
+static PHP_METHOD(ExcimerLog, getShortcutData)
+{
+	ExcimerLog_obj *log_obj = EXCIMER_OBJ_ZP(ExcimerLog, getThis());
+	excimer_log_get_shortcut_data(&log_obj->log, return_value);
+}
+/* }}} */
+
+/* {{{ proto string ExcimerLog::formatShortcut()
+ */
+static PHP_METHOD(ExcimerLog, formatShortcut)
+{
+	ExcimerLog_obj *log_obj = EXCIMER_OBJ_ZP(ExcimerLog, getThis());
+	RETURN_STR(excimer_log_format_shortcut(&log_obj->log));
 }
 /* }}} */
 
