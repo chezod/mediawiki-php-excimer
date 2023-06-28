@@ -768,12 +768,14 @@ zend_string *excimer_log_format_shortcut(excimer_log *log)
 		php_implode(zs_space, ht_p_frames, &z_tmp);
 		zend_hash_next_index_insert_new(ht_p_lines, &z_tmp);
 	}
+	zend_array_release(ht_p_frames);
 
 	/* Append "weights" (long) */
 	if (zend_hash_num_elements(ht_p_weights) > 0) {
         php_implode(zs_space, ht_p_weights, &z_tmp);
         zend_hash_next_index_insert_new(ht_p_lines, &z_tmp);
 	}
+	zend_array_release(ht_p_weights);
 
 	/* Append "samples" (array[long]) */
 	if (zend_hash_num_elements(ht_p_samples) > 0) {
@@ -783,16 +785,14 @@ zend_string *excimer_log_format_shortcut(excimer_log *log)
 		}
 		ZEND_HASH_FOREACH_END();
 	}
+	zend_array_release(ht_p_samples);
 
 	php_implode(zs_comma, ht_p_lines, &z_tmp);
 
+	zend_array_release(ht_p_lines);
+
 	zend_string_release(zs_space);
 	zend_string_release(zs_comma);
-
-    zend_array_release(ht_p_lines);
-    zend_array_release(ht_p_frames);
-    zend_array_release(ht_p_weights);
-    zend_array_release(ht_p_samples);
 
 	return Z_STR(z_tmp);
 }
@@ -805,12 +805,6 @@ void excimer_log_combine_shortcut_data(
 ) {
 	HashTable *ht_p_frames = (*ht_pp_frames = zend_new_array(0));
 	zend_hash_real_init_packed(ht_p_frames);
-
-	HashTable *ht_p_weights = (*ht_pp_weights = zend_new_array(log->entries_size));
-	zend_hash_real_init_packed(ht_p_weights);
-
-	HashTable *ht_p_samples = (*ht_pp_samples = zend_new_array(log->entries_size));
-    zend_hash_real_init_packed(ht_p_samples);
 
     HashTable *ht_p_index_by_key = zend_new_array(0);
     zend_hash_real_init_mixed(ht_p_index_by_key);
@@ -852,7 +846,15 @@ void excimer_log_combine_shortcut_data(
         l_p_frame_indexes[l_tmp] = Z_LVAL_P(z_p_tmp);
     }
 
-    for (l_tmp = 0; l_tmp < log->entries_size; l_tmp++) {
+	zend_array_release(ht_p_index_by_key);
+
+	HashTable *ht_p_weights = (*ht_pp_weights = zend_new_array(log->entries_size));
+	zend_hash_real_init_packed(ht_p_weights);
+
+	HashTable *ht_p_samples = (*ht_pp_samples = zend_new_array(log->entries_size));
+	zend_hash_real_init_packed(ht_p_samples);
+
+	for (l_tmp = 0; l_tmp < log->entries_size; l_tmp++) {
         excimer_log_entry *entry = &log->entries[l_tmp];
 
         /* Insert entry event count */
@@ -864,7 +866,7 @@ void excimer_log_combine_shortcut_data(
 
         /* Create the array with ZEND_HASH_FILL_PACKED. This is just a fast way
          * to get it into the right state, with num_frames elements. */
-        HashTable *ht_p_stack = excimer_log_new_array(l_frames_count * 2);
+        HashTable *ht_p_stack = excimer_log_new_array(l_frames_count);
         zend_hash_real_init_packed(ht_p_stack);
 
         ZEND_HASH_FILL_PACKED(ht_p_stack) {
@@ -884,9 +886,6 @@ void excimer_log_combine_shortcut_data(
         ZVAL_ARR(&z_tmp, ht_p_stack);
         zend_hash_next_index_insert_new(ht_p_samples, &z_tmp);
     }
-
-    /* Cleanup */
-    zend_array_release(ht_p_index_by_key);
 
     efree(l_p_frame_indexes);
 }
